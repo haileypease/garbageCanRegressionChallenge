@@ -44,7 +44,7 @@ observDF
 ## My Analysis
 ## Question 1: Bivariate Regression Analysis with StressSurvey: Run a bivariate regression of Anxiety on StressSurvey. What are the estimated coefficients? How do they compare to the true relationship?
 
-When I did the regression of Anxiety on StressSurvey, I found an intercept of roughly 0.05 and a slope of about 1.01; Anxiety goes up almost one-to-one with StressSurvey. Even the plot shows a strong linear relationship, so at first it seems like StressSurvey is a great predictor of Anxiety. That's misleading, though, because the true formula is Anxiety = Stress + 0.1 × Time, and StressSurvey isn't actually part of that. The only reason the model looks good is because StressSurvey happens to move with Stress, so the regression is basically just giving credit to the wrong variable. It looks statistically correct, but it's not explaining the real cause - which is exactly why this is a garbage-can regression.
+When I did the regression of Anxiety on StressSurvey, I found an intercept of roughly 0.05 and a slope of about 1.01; Anxiety goes up almost one-to-one with StressSurvey. Even the plot shows a strong linear relationship, so at first it seems like StressSurvey is a great predictor of Anxiety. That's misleading, though, because the true formula is Anxiety = Stress + 0.1 × Time, and StressSurvey isn't actually part of that. The only reason the model looks good is because StressSurvey happens to move with Stress, so the regression is basically just giving credit to the wrong variable. It looks statistically correct, but it's not explaining the real cause which is exactly why this is a garbage-can regression.
 ```{r}
 # Bivariate regression: Anxiety ~ StressSurvey
 model1 <- lm(Anxiety ~ StressSurvey, data = observDF)
@@ -60,18 +60,181 @@ tidy(model1)
 # Note: We're regressing on StressSurvey, not Stress directly
 cat("\nTrue relationship: Anxiety = Stress + 0.1 × Time\n")
 cat("Estimated relationship: Anxiety =", round(coef(model1)[1], 4), "+", round(coef(model1)[2], 4), "× StressSurvey\n")
+```
+
+## Question 2: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between StressSurvey and Anxiety. Comment on the fit of the model.
+
+```{r}
+# Scatter plot with regression line: StressSurvey vs Anxiety
+# Using jitter to show overlapping points
+ggplot(observDF, aes(x = StressSurvey, y = Anxiety)) +
+  geom_point(size = 3, alpha = 0.7, color = "darkblue", 
+             position = position_jitter(width = 0.2, height = 0.1, seed = 123)) +
+  geom_smooth(method = "lm", se = TRUE, color = "red", fill = "pink", alpha = 0.3) +
+  coord_cartesian(xlim = c(-1, 13), ylim = c(-1, 13.5), expand = TRUE) +
+  labs(
+    title = "Relationship between StressSurvey and Anxiety",
+    subtitle = "Scatter plot with regression line and confidence interval",
+    x = "StressSurvey",
+    y = "Anxiety"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11, color = "gray50")
+  )
+```
+
+## Question 3: Bivariate Regression Analysis with Time: Run a bivariate regression of Anxiety on Time. What are the estimated coefficients? How do they compare to the true relationship?
+
+```{r}
+# Bivariate regression: Anxiety ~ Time
+model2 <- lm(Anxiety ~ Time, data = observDF)
+
+# Display model summary
+summary(model2)
+
+# Extract coefficients using broom for tidy output
+tidy(model2)
+
+# Compare to true relationship
+# True relationship: Anxiety = Stress + 0.1 × Time
+# Note: We're regressing on Time only, not Stress
+cat("\nTrue relationship: Anxiety = Stress + 0.1 × Time\n")
+cat("Estimated relationship: Anxiety =", round(coef(model2)[1], 4), "+", round(coef(model2)[2], 4), "× Time\n")
 
 # Create scatter plot with regression line
-ggplot(observDF, aes(x = StressSurvey, y = Anxiety)) +
-  geom_point(size = 3, alpha = 0.7) +
+# Using jitter to show overlapping points
+ggplot(observDF, aes(x = Time, y = Anxiety)) +
+  geom_point(size = 3, alpha = 0.7, position = position_jitter(width = 0.05, height = 0.1, seed = 123)) +
   geom_smooth(method = "lm", se = TRUE, color = "blue", fill = "lightblue") +
   labs(
-    title = "Bivariate Regression: Anxiety ~ StressSurvey",
-    x = "StressSurvey",
+    title = "Bivariate Regression: Anxiety ~ Time",
+    x = "Time",
     y = "Anxiety"
   ) +
   theme_minimal()
 ```
 
-##
+## Question 4: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between Time and Anxiety. Comment on the fit of the model.
 
+```{r}
+# Scatter plot with regression line: Time vs Anxiety
+# Using jitter to show overlapping points
+ggplot(observDF, aes(x = Time, y = Anxiety)) +
+  geom_point(size = 3, alpha = 0.7, color = "darkblue", 
+             position = position_jitter(width = 0.05, height = 0.1, seed = 123)) +
+  geom_smooth(method = "lm", se = TRUE, color = "red", fill = "pink", alpha = 0.3) +
+  coord_cartesian(xlim = c(-0.2, 2.5), ylim = c(-1, 13.5), expand = TRUE) +
+  labs(
+    title = "Relationship between Time and Anxiety",
+    subtitle = "Scatter plot with regression line and confidence interval",
+    x = "Time",
+    y = "Anxiety"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11, color = "gray50")
+  )
+```
+
+## Question 5: Multiple Regression Analysis: Run a multiple regression of Anxiety on StressSurvey and Time. What are the estimated coefficients? How do they compare to the true relationship?
+
+```{r}
+# Multiple regression: Anxiety ~ StressSurvey + Time
+model3 <- lm(Anxiety ~ StressSurvey + Time, data = observDF)
+
+# Display model summary
+summary(model3)
+
+# Extract coefficients using broom for tidy output
+tidy(model3)
+
+# Extract R-squared
+glance(model3)
+
+# Compare to true relationship
+# True relationship: Anxiety = Stress + 0.1 × Time
+# Note: We're regressing on StressSurvey and Time, not Stress directly
+cat("\nTrue relationship: Anxiety = Stress + 0.1 × Time\n")
+cat("Estimated relationship: Anxiety =", round(coef(model3)[1], 4), "+", 
+    round(coef(model3)[2], 4), "× StressSurvey +", 
+    round(coef(model3)[3], 4), "× Time\n")
+cat("R-squared:", round(summary(model3)$r.squared, 4), "\n")
+```
+
+## Question 7: Run a multiple regression of Anxiety on both Stress and Time. What would the estimated coefficients be? How would they compare to the true relationship?
+
+```{r}
+# Multiple regression: Anxiety ~ Stress + Time
+# Note: This model uses the true predictors, so it should fit perfectly
+# The "essentially perfect fit" warning is expected and indicates the model
+# matches the true relationship: Anxiety = Stress + 0.1 × Time
+# This is actually a good sign - it means we're using the correct predictors!
+model4 <- lm(Anxiety ~ Stress + Time, data = observDF)
+
+# Display model summary
+# Suppressing the "essentially perfect fit" warning since it's expected
+# when using the true predictors that match the data-generating process
+suppressWarnings(summary(model4))
+
+# Extract coefficients using broom for tidy output
+suppressWarnings(tidy(model4))
+
+# Extract R-squared
+suppressWarnings(glance(model4))
+
+# Compare to true relationship
+# True relationship: Anxiety = Stress + 0.1 × Time
+cat("\nTrue relationship: Anxiety = Stress + 0.1 × Time\n")
+cat("Estimated relationship: Anxiety =", round(coef(model4)[1], 4), "+", 
+    round(coef(model4)[2], 4), "× Stress +", 
+    round(coef(model4)[3], 4), "× Time\n")
+cat("R-squared:", round(suppressWarnings(summary(model4))$r.squared, 4), "\n")
+```
+
+## Question 8: Compare the R-squared values and coefficient interpretations between the two multiple regression models. Do both models show statistical significance in all of their coefficients? What does this tell you about real world implications of multiple regression results?
+
+```{r}
+# Compare the two multiple regression models
+# Model 3: Anxiety ~ StressSurvey + Time
+# Model 4: Anxiety ~ Stress + Time
+
+# Create a comparison table of coefficients
+coef_comparison <- bind_rows(
+  tidy(model3) %>% mutate(Model = "Model 3 (StressSurvey + Time)"),
+  suppressWarnings(tidy(model4)) %>% mutate(Model = "Model 4 (Stress + Time)")
+) %>%
+  select(Model, term, estimate, std.error, statistic, p.value)
+
+# Display coefficient comparison
+print(coef_comparison)
+
+# Compare R-squared values
+r2_comparison <- bind_rows(
+  glance(model3) %>% mutate(Model = "Model 3 (StressSurvey + Time)"),
+  suppressWarnings(glance(model4)) %>% mutate(Model = "Model 4 (Stress + Time)")
+) %>%
+  select(Model, r.squared, adj.r.squared)
+
+cat("\n=== R-squared Comparison ===\n")
+print(r2_comparison)
+
+# Summary comparison
+cat("\n=== Model Comparison Summary ===\n")
+cat("Model 3 (StressSurvey + Time):\n")
+cat("  R-squared:", round(summary(model3)$r.squared, 4), "\n")
+cat("  Intercept:", round(coef(model3)[1], 4), "\n")
+cat("  StressSurvey coefficient:", round(coef(model3)[2], 4), "\n")
+cat("  Time coefficient:", round(coef(model3)[3], 4), "\n")
+cat("\nModel 4 (Stress + Time):\n")
+cat("  R-squared:", round(suppressWarnings(summary(model4))$r.squared, 4), "\n")
+cat("  Intercept:", round(coef(model4)[1], 4), "\n")
+cat("  Stress coefficient:", round(coef(model4)[2], 4), " (true value = 1.0)\n")
+cat("  Time coefficient:", round(coef(model4)[3], 4), " (true value = 0.1)\n")
+```
+
+## Question 9: Reflect on Real-World Implications: For each of the two multiple regression models, assume their respective outputs/conclusions were published in academic journals and then subsequently picked up by the popular press. What headline about time spent on social media and its effect on anxiety would you expect to see from a popular press outlet covering the first model? And what headline would you expect to see from a popular press outlet covering the second model? Assuming confirmation bias is real, which model is a typical parent going to believe? Which model will Facebook, Instagram, and TikTok prefer?
+
+## Question 10: Avoiding Misleading Statistical Significance: Reflect on this tip to avoid being misled by statistically significant results: splitting the sample into meaningful subsets ("statistical regimes"), and using graphical diagnostics for linearity rather than blind reliance on "canned" regressions: Apply this approach to multiple regression of Anxiety on both StressSurvey and Time by analyzing a smartly chosen subset of the data. What specific subset did you choose and why? Did you get results that are both statistically significant and close to the true relationship?
