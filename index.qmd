@@ -41,30 +41,37 @@ observDF <- tribble(
 observDF
 ```
 
-## Python Code
+## My Analysis
+## Question 1: Bivariate Regression Analysis with StressSurvey: Run a bivariate regression of Anxiety on StressSurvey. What are the estimated coefficients? How do they compare to the true relationship?
 
-```{python}
-#| echo: true
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-import statsmodels.api as sm
+When I did the regression of Anxiety on StressSurvey, I found an intercept of roughly 0.05 and a slope of about 1.01; Anxiety goes up almost one-to-one with StressSurvey. Even the plot shows a strong linear relationship, so at first it seems like StressSurvey is a great predictor of Anxiety. That's misleading, though, because the true formula is Anxiety = Stress + 0.1 × Time, and StressSurvey isn't actually part of that. The only reason the model looks good is because StressSurvey happens to move with Stress, so the regression is basically just giving credit to the wrong variable. It looks statistically correct, but it's not explaining the real cause - which is exactly why this is a garbage-can regression.
+```{r}
+# Bivariate regression: Anxiety ~ StressSurvey
+model1 <- lm(Anxiety ~ StressSurvey, data = observDF)
 
-# Data with known true relationships: Anxiety = Stress + 0.1 × Time
-data = {
-    'Stress': [0,0,0,1,1,1,2,2,2,8,8,8,12,12,12],
-    'StressSurvey': [0,0,0,3,3,3,6,6,6,9,9,9,12,12,12],
-    'Time': [0,1,1,1,1,1,2,2,2,2,2,2.1,2.2,2.2,2.2],
-    'Anxiety': [0,0.1,0.1,1.1,1.1,1.1,2.2,2.2,2.2,8.2,8.2,8.21,12.22,12.22,12.22]
-}
+# Display model summary
+summary(model1)
 
-observDF = pd.DataFrame(data)
-print(observDF)
+# Extract coefficients using broom for tidy output
+tidy(model1)
+
+# Compare to true relationship
+# True relationship: Anxiety = Stress + 0.1 × Time
+# Note: We're regressing on StressSurvey, not Stress directly
+cat("\nTrue relationship: Anxiety = Stress + 0.1 × Time\n")
+cat("Estimated relationship: Anxiety =", round(coef(model1)[1], 4), "+", round(coef(model1)[2], 4), "× StressSurvey\n")
+
+# Create scatter plot with regression line
+ggplot(observDF, aes(x = StressSurvey, y = Anxiety)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", fill = "lightblue") +
+  labs(
+    title = "Bivariate Regression: Anxiety ~ StressSurvey",
+    x = "StressSurvey",
+    y = "Anxiety"
+  ) +
+  theme_minimal()
 ```
 
-## Your Analysis
+##
 
-Follow the challenge instructions from your course to complete your analysis.
