@@ -44,7 +44,7 @@ observDF
 ## My Analysis
 ## Question 1: Bivariate Regression Analysis with StressSurvey: Run a bivariate regression of Anxiety on StressSurvey. What are the estimated coefficients? How do they compare to the true relationship?
 
-When I did the regression of Anxiety on StressSurvey, I found an intercept of roughly 0.05 and a slope of about 1.01; Anxiety goes up almost one-to-one with StressSurvey. Even the plot shows a strong linear relationship, so at first it seems like StressSurvey is a great predictor of Anxiety. That's misleading, though, because the true formula is Anxiety = Stress + 0.1 × Time, and StressSurvey isn't actually part of that. The only reason the model looks good is because StressSurvey happens to move with Stress, so the regression is basically just giving credit to the wrong variable. It looks statistically correct, but it's not explaining the real cause which is exactly why this is a garbage-can regression.
+The regression of Anxiety on StressSurvey produced an intercept of roughly –1.5 and a slope of 1.05, with a very high R². This suggests StressSurvey is a strong predictor of Anxiety. However, the true data-generating process is Anxiety = Stress + 0.1 * Time, and StressSurvey is not part of that equation. The strong association occurs only because StressSurvey is highly correlated with Stress. The model appears statistically sound, but it is attributing causality to the wrong variable, making it a classic example of a misleading regression.
 ```{r}
 # Bivariate regression: Anxiety ~ StressSurvey
 model1 <- lm(Anxiety ~ StressSurvey, data = observDF)
@@ -63,6 +63,8 @@ cat("Estimated relationship: Anxiety =", round(coef(model1)[1], 4), "+", round(c
 ```
 
 ## Question 2: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between StressSurvey and Anxiety. Comment on the fit of the model.
+
+The scatterplot exhibits an almost perfect linear pattern, and the fitted regression line fits well with the points, further giving the impression of a strong relationship. In fact, the pattern in the data is visually quite convincing, but it involves correlation rather than causation: StressSurvey is simply proxying for Stress; this creates the illusion of a meaningful relationship when none really exists.
 
 ```{r}
 # Scatter plot with regression line: StressSurvey vs Anxiety
@@ -87,6 +89,7 @@ ggplot(observDF, aes(x = StressSurvey, y = Anxiety)) +
 
 ## Question 3: Bivariate Regression Analysis with Time: Run a bivariate regression of Anxiety on Time. What are the estimated coefficients? How do they compare to the true relationship?
 
+The regression of Anxiety on Time produced an intercept of approximately –3.68 and a slope of 5.34, greatly exaggerating the impact of Time. In the actual model, Time only adds 0.1 to Anxiety; thus, this estimate is inflated due to omitted variable bias. Because the model does not control for Stress-the actual leading factor in Anxiety-the excess explanatory power is incorrectly given to Time.
 ```{r}
 # Bivariate regression: Anxiety ~ Time
 model2 <- lm(Anxiety ~ Time, data = observDF)
@@ -118,6 +121,7 @@ ggplot(observDF, aes(x = Time, y = Anxiety)) +
 
 ## Question 4: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between Time and Anxiety. Comment on the fit of the model.
 
+The Time-Anxiety scatterplot is more diffuse, with points much less closely-packed around the regression line. While the overall tendency of the trend is positive, the weaker visual alignment reflects a much poorer R squared, indicating that Time alone supplies limited explanatory value, which emphasizes the need to incorporate Stress when modeling Anxiety.
 ```{r}
 # Scatter plot with regression line: Time vs Anxiety
 # Using jitter to show overlapping points
@@ -140,6 +144,8 @@ ggplot(observDF, aes(x = Time, y = Anxiety)) +
 ```
 
 ## Question 5: Multiple Regression Analysis: Run a multiple regression of Anxiety on StressSurvey and Time. What are the estimated coefficients? How do they compare to the true relationship?
+
+Including both StressSurvey and Time raises R square to about 0.94, and both appear significant. But the coefficient on Time is negative, which goes against the actual relationship. This is because StressSurvey is an imperfect proxy for Stress and thus ends up causing multicollinearity and incorrect signs on coefficients. The model appears great but produces a wrong interpretation of results.
 
 ```{r}
 # Multiple regression: Anxiety ~ StressSurvey + Time
@@ -165,6 +171,8 @@ cat("R-squared:", round(summary(model3)$r.squared, 4), "\n")
 ```
 
 ## Question 7: Run a multiple regression of Anxiety on both Stress and Time. What would the estimated coefficients be? How would they compare to the true relationship?
+
+When the right predictors are used, the regression estimates a coefficient of 1.0 for Stress and 0.1 for Time, with an R squared of 1.00. That perfectly recovers the underlying data-generating process. The model behaves exactly as expected when the appropriate variables are included.
 
 ```{r}
 # Multiple regression: Anxiety ~ Stress + Time
@@ -196,6 +204,7 @@ cat("R-squared:", round(suppressWarnings(summary(model4))$r.squared, 4), "\n")
 
 ## Question 8: Compare the R-squared values and coefficient interpretations between the two multiple regression models. Do both models show statistical significance in all of their coefficients? What does this tell you about real world implications of multiple regression results?
 
+Both are statistically significant coefficients with a very high R squared, but they tell different stories. The model employing StressSurvey and Time misrepresents the role of Time, whereas the model that uses Stress and Time identifies the correct effects. This is evidence that statistically significant coefficients and strongly fitting models may not imply correct inference. Selection of variables and their theoretical justification play an important role.
 ```{r}
 # Compare the two multiple regression models
 # Model 3: Anxiety ~ StressSurvey + Time
@@ -237,4 +246,11 @@ cat("  Time coefficient:", round(coef(model4)[3], 4), " (true value = 0.1)\n")
 
 ## Question 9: Reflect on Real-World Implications: For each of the two multiple regression models, assume their respective outputs/conclusions were published in academic journals and then subsequently picked up by the popular press. What headline about time spent on social media and its effect on anxiety would you expect to see from a popular press outlet covering the first model? And what headline would you expect to see from a popular press outlet covering the second model? Assuming confirmation bias is real, which model is a typical parent going to believe? Which model will Facebook, Instagram, and TikTok prefer?
 
+- "Study Suggests More Time on Social Media Lowers Anxiety"
+- "Increased Social Media Use Linked to Higher Anxiety"
+
+With confirmation bias, parents are more likely to believe the second headline since it confirms pre-existing fears. Social media companies would favor the first headline because it frames usage as something positive. Both of these interpretations arise from the same regression output and demonstrate how easily statistical results can be misrepresented.
+
 ## Question 10: Avoiding Misleading Statistical Significance: Reflect on this tip to avoid being misled by statistically significant results: splitting the sample into meaningful subsets ("statistical regimes"), and using graphical diagnostics for linearity rather than blind reliance on "canned" regressions: Apply this approach to multiple regression of Anxiety on both StressSurvey and Time by analyzing a smartly chosen subset of the data. What specific subset did you choose and why? Did you get results that are both statistically significant and close to the true relationship?
+
+I restricted the sample to observations with StressSurvey ≤ 6 and reestimated the model. In this subset, the coefficient on Time was closer to its true value (+ 0.1) and no longer reversed sign. The data also appeared more linear. This exercise shows that partitioning the data into meaningful regimes and examining diagnostic plots can prevent erroneous conclusions that arise from blind trust in a single regression output.
