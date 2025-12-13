@@ -90,6 +90,15 @@ ul.task-list li input[type="checkbox"] {
 <section id="question-3-bivariate-regression-analysis-with-time-run-a-bivariate-regression-of-anxiety-on-time.-what-are-the-estimated-coefficients-how-do-they-compare-to-the-true-relationship" class="level2">
 <h2 class="anchored" data-anchor-id="question-3-bivariate-regression-analysis-with-time-run-a-bivariate-regression-of-anxiety-on-time.-what-are-the-estimated-coefficients-how-do-they-compare-to-the-true-relationship">Question 3: Bivariate Regression Analysis with Time: Run a bivariate regression of Anxiety on Time. What are the estimated coefficients? How do they compare to the true relationship?</h2>
 <p>The regression of Anxiety on Time produced an intercept of approximately –3.68 and a slope of 5.34, greatly exaggerating the impact of Time. In the actual model, Time only adds 0.1 to Anxiety; thus, this estimate is inflated due to omitted variable bias. Because the model does not control for Stress-the actual leading factor in Anxiety-the excess explanatory power is incorrectly given to Time.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="question-4-visualization-of-bivariate-relationship-create-a-scatter-plot-with-the-regression-line-showing-the-relationship-between-time-and-anxiety.-comment-on-the-fit-of-the-model." class="level2">
 <h2 class="anchored" data-anchor-id="question-4-visualization-of-bivariate-relationship-create-a-scatter-plot-with-the-regression-line-showing-the-relationship-between-time-and-anxiety.-comment-on-the-fit-of-the-model.">Question 4: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between Time and Anxiety. Comment on the fit of the model.</h2>
@@ -127,6 +136,15 @@ ul.task-list li input[type="checkbox"] {
 <section id="question-10-avoiding-misleading-statistical-significance-reflect-on-this-tip-to-avoid-being-misled-by-statistically-significant-results-splitting-the-sample-into-meaningful-subsets-statistical-regimes-and-using-graphical-diagnostics-for-linearity-rather-than-blind-reliance-on-canned-regressions-apply-this-approach-to-multiple-regression-of-anxiety-on-both-stresssurvey-and-time-by-analyzing-a-smartly-chosen-subset-of-the-data.-what-specific-subset-did-you-choose-and-why-did-you-get-results-that-are-both-statistically-significant-and-close-to-the-true-relationship" class="level2">
 <h2 class="anchored" data-anchor-id="question-10-avoiding-misleading-statistical-significance-reflect-on-this-tip-to-avoid-being-misled-by-statistically-significant-results-splitting-the-sample-into-meaningful-subsets-statistical-regimes-and-using-graphical-diagnostics-for-linearity-rather-than-blind-reliance-on-canned-regressions-apply-this-approach-to-multiple-regression-of-anxiety-on-both-stresssurvey-and-time-by-analyzing-a-smartly-chosen-subset-of-the-data.-what-specific-subset-did-you-choose-and-why-did-you-get-results-that-are-both-statistically-significant-and-close-to-the-true-relationship">Question 10: Avoiding Misleading Statistical Significance: Reflect on this tip to avoid being misled by statistically significant results: splitting the sample into meaningful subsets (“statistical regimes”), and using graphical diagnostics for linearity rather than blind reliance on “canned” regressions: Apply this approach to multiple regression of Anxiety on both StressSurvey and Time by analyzing a smartly chosen subset of the data. What specific subset did you choose and why? Did you get results that are both statistically significant and close to the true relationship?</h2>
 <p>I restricted the sample to observations with StressSurvey ≤ 6 and reestimated the model. In this subset, the coefficient on Time was closer to its true value (+ 0.1) and no longer reversed sign. The data also appeared more linear. This exercise shows that partitioning the data into meaningful regimes and examining diagnostic plots can prevent erroneous conclusions that arise from blind trust in a single regression output.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 

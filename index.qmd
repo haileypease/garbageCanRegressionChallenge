@@ -84,6 +84,18 @@ The regression of Anxiety on Time produced an intercept of approximately –3.68
 ```{r}
 # Bivariate regression: Anxiety ~ Time
 model2 <- lm(Anxiety ~ Time, data = observDF)
+
+# Create scatter plot with regression line
+# Using jitter to show overlapping points
+ggplot(observDF, aes(x = Time, y = Anxiety)) +
+  geom_point(size = 3, alpha = 0.7, position = position_jitter(width = 0.05, height = 0.1, seed = 123)) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", fill = "lightblue") +
+  labs(
+    title = "Bivariate Regression: Anxiety ~ Time",
+    x = "Time",
+    y = "Anxiety"
+  ) +
+  theme_minimal()
 ```
 
 ## Question 4: Visualization of Bivariate Relationship: Create a scatter plot with the regression line showing the relationship between Time and Anxiety. Comment on the fit of the model.
@@ -147,3 +159,28 @@ With confirmation bias, parents are more likely to believe the second headline s
 ## Question 10: Avoiding Misleading Statistical Significance: Reflect on this tip to avoid being misled by statistically significant results: splitting the sample into meaningful subsets ("statistical regimes"), and using graphical diagnostics for linearity rather than blind reliance on "canned" regressions: Apply this approach to multiple regression of Anxiety on both StressSurvey and Time by analyzing a smartly chosen subset of the data. What specific subset did you choose and why? Did you get results that are both statistically significant and close to the true relationship?
 
 I restricted the sample to observations with StressSurvey ≤ 6 and reestimated the model. In this subset, the coefficient on Time was closer to its true value (+ 0.1) and no longer reversed sign. The data also appeared more linear. This exercise shows that partitioning the data into meaningful regimes and examining diagnostic plots can prevent erroneous conclusions that arise from blind trust in a single regression output.
+
+```{r}
+# Subset analysis: StressSurvey ≤ 6
+subsetDF <- observDF %>% filter(StressSurvey <= 6)
+
+# Multiple regression on subset
+model_subset <- lm(Anxiety ~ StressSurvey + Time, data = subsetDF)
+
+# Diagnostic plot: Scatter plot of the subset with regression line
+ggplot(subsetDF, aes(x = StressSurvey, y = Anxiety, color = Time)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "red", fill = "pink", alpha = 0.3, aes(group = 1)) +
+  labs(
+    title = "Subset Analysis: StressSurvey ≤ 6",
+    subtitle = "Diagnostic plot showing more linear relationship in this regime",
+    x = "StressSurvey",
+    y = "Anxiety",
+    color = "Time"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11, color = "gray50")
+  )
+```
